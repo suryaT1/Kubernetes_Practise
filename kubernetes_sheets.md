@@ -1,76 +1,72 @@
-https://kubernetes.io/docs/reference/kubectl/quick-reference/   -> cheet sheet
+# 🚀 Kubernetes Kubectl Cheat Sheet
 
-#######################################
+Quick reference for commonly used `kubectl` commands.  
+Based on the official [Kubernetes Docs](https://kubernetes.io/docs/reference/kubectl/quick-reference/).
 
-kubectl get nodes -> list all current nodes (worker + control plane) 
-kubectl config -> for moving different clusters,namespaces and different logins stored in your kubeconfig.
-   EXAMPLES: 
-        kubectl config get-contexts        # List all saved contexts (Cluster)
-		kubectl config use-context prod    # Switch to prod cluster/user/namespace
-		kubectl config current-context     # Show current context
-		kubectl config set-context --current --namespace=dev  # Change default namespace	
-kubectl explain -> built-in cheat sheet for writing YAML manifests correctly under time pressur
-  example: kubectl explain pod.spec.containers
-kubectl create -f pod.yml -> Create a new resource from the YAML file
-  Use case: First-time deployment of something
-  
-kubectl apply -f pod.yml -> Create or update a resource from the YAML file (declarative way).
-  Use case: Continuous deployments, making config changes, GitOps.
-  
-kubectl describe pod <podname> -> to validate logs
+## Cluster & Context Management
+- `kubectl get nodes` → list all current nodes (worker + control plane)  
+- `kubectl config` → for moving different clusters, namespaces and different logins stored in your kubeconfig.  
+  - `kubectl config get-contexts` → List all saved contexts (Cluster)  
+  - `kubectl config use-context prod` → Switch to prod cluster/user/namespace  
+  - `kubectl config current-context` → Show current context  
+  - `kubectl config set-context --current --namespace=dev` → Change default namespace  
 
-kubectl edit ->open and modify a live Kubernetes resource directly from the command line 
-               in your default text editor (usually vi or nano)
-	syntax: kubectl edit <resource_type> <resource_name>
-	
-kubectl exec -it <pod name> --sh -> login into pod
+## Explain & YAML
+- `kubectl explain` → built-in cheat sheet for writing YAML manifests correctly  
+  - Example: `kubectl explain pod.spec.containers`  
+- `kubectl create -f pod.yml` → Create a new resource from the YAML file (first-time deployment)  
+- `kubectl apply -f pod.yml` → Create or update a resource from the YAML file (declarative way, GitOps)  
 
---dry-run=client  -> it wont apply but will show plan wt if that cmnd if executes
-kubectl run nginx --image=nginx --dry-run=client -o yaml -> it will shows output in a yaml
-kubectl get pods nginx --show-labels  -> it will show the labels of pods
-kubectl get pods -o wide -> wide information about pod
-kubectl get po -> short cut of pods
-kubectl get ep  -> to fetch the endpoints IP's of clusters
+## Inspect & Edit
+- `kubectl describe pod <podname>` → Validate logs / detailed info  
+- `kubectl edit <resource_type> <resource_name>` → Open and modify a live Kubernetes resource in default editor (vi/nano)  
 
+## Pods & Exec
+- `kubectl exec -it <pod name> -- sh` → Login into pod  
+- `kubectl get pods nginx --show-labels` → Show pod labels  
+- `kubectl get pods -o wide` → Wide info (node, IP, etc.)  
+- `kubectl get po` → Shortcut for pods  
+- `kubectl get ep` → Fetch the endpoints IPs of services  
 
-Replication Controller | Replicaset | Deployment
+## Dry Run
+- `--dry-run=client` → Won’t apply, only show plan if executed  
+- `kubectl run nginx --image=nginx --dry-run=client -o yaml` → Show YAML output without creating resource  
 
-kubectl get rc  -> list the replication controllers in kubernetes cluster
-kubectl delete rc/nginx-rc -> delete the replication controller names nginx-rc from current workspace.
-kubectl scale rs/nginx-rs --replicas=10  -> to create a replication set using cmnds
-kubectl scale --replicas=5 -f foo.yml
-kubectl scale --help -> list all cmnds usecases with respect to scale
-kubectl get all -> all things those are running on cluster
-kubectl set image <resource>/<name> <container name>=<new image>
-  example : kubectl set image deployment/my-deployment my-container=nginx:1.21
-kubectl rollout history deploy/nginx-deploy -> to see all rollout changes
-kubectl rollout undo deploy/nginx-deploy -> bring back old image
+## Replication Controller | ReplicaSet | Deployment
+- `kubectl get rc` → List replication controllers  
+- `kubectl delete rc/nginx-rc` → Delete replication controller named nginx-rc  
+- `kubectl scale rs/nginx-rs --replicas=10` → Scale replicaset to 10  
+- `kubectl scale --replicas=5 -f foo.yml` → Scale using YAML file  
+- `kubectl scale --help` → List all use cases for scale  
+- `kubectl get all` → List everything running in cluster  
+- `kubectl set image <resource>/<name> <container>=<new image>`  
+  - Example: `kubectl set image deployment/my-deployment my-container=nginx:1.21`  
+- `kubectl rollout history deploy/nginx-deploy` → Show rollout history  
+- `kubectl rollout undo deploy/nginx-deploy` → Rollback to old image  
 
-key notes:
-   1. if user deletes rs/rc then those pods also will deleted automatically
-   2. if you dont want to delete the pods use the --cascade=orphan this will create rs/rc not the pods
-   
-Best Practises:
-   1. using replication controller is old it will only manage pods which are created by rc
-   2. using replicaset is latest and it manages all the pods which are part of tag which is mentioned on configuration
-   3. using deployment is best practise it has default rs so it has options to rollback ,changing versions of pod and so on.
-   
-   
-Kubernetes Services:
-   
-Service is an abstraction that defines a stable way to access a group of Pods
-   
-ClusterIP (default): Exposes the Service on a cluster-internal IP.
-    Example use: Microservices talking to each other.
+### Key Notes
+1. Deleting `rs/rc` also deletes pods automatically  
+2. Use `--cascade=orphan` to delete rs/rc but keep pods  
 
-NodePort: Exposes the Service on each Node’s IP at a static port.
-    Example use: Testing services quickly without cloud load balancer.
+### Best Practices
+1. **ReplicationController** → Old, only manages pods created by it  
+2. **ReplicaSet** → Latest, manages pods by labels  
+3. **Deployment** → Best practice (includes RS, rollback, scaling, versioning)  
 
-LoadBalancer: Provisions an external load balancer (from cloud providers like AWS, Azure, GCP).
-	Example use: Public-facing applications (web apps, APIs).
+## Kubernetes Services
+Service is an abstraction that defines a stable way to access a group of Pods.  
 
-ExternalName:Maps a Service to an external DNS name (no selector or Pods involved).
-	Example use: Redirecting to an external database like mydb.example.com.
-   
-   
+- **ClusterIP (default):** Exposes service on a cluster-internal IP.  
+  Example: Microservices talking to each other.  
 
+- **NodePort:** Exposes service on each Node’s IP at a static port.  
+  Example: Quick testing without cloud LB.  
+
+- **LoadBalancer:** Provisions external LB (AWS, Azure, GCP).  
+  Example: Public-facing apps or APIs.  
+
+- **ExternalName:** Maps service to external DNS name.  
+  Example: Redirect to external DB like `mydb.example.com`.  
+
+---
+✅ End of Cheat Sheet

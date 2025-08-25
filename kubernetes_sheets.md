@@ -1,4 +1,4 @@
-# 🚀 Kubernetes Kubectl Cheat Sheet
+#  Kubernetes Kubectl Cheat Sheet
 
 Quick reference for commonly used `kubectl` commands.  
 Based on the official [Kubernetes Docs](https://kubernetes.io/docs/reference/kubectl/quick-reference/).
@@ -69,4 +69,4 @@ Service is an abstraction that defines a stable way to access a group of Pods.
   Example: Redirect to external DB like `mydb.example.com`.  
 
 ---
-✅ End of Cheat Sheet
+

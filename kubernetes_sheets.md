@@ -73,3 +73,4 @@ ExternalName:Maps a Service to an external DNS name (no selector or Pods involve
 	Example use: Redirecting to an external database like mydb.example.com.
    
    
+
